@@ -4,7 +4,6 @@
 # Data Preprocessing
 
 import numpy as np
-import matplotlib.pyplot as plt
 import pandas as pd
 
 # Import the dataset
@@ -73,7 +72,7 @@ y_pred = (y_pred > 0.5)
 cm = confusion_matrix(y_test, y_pred)
 
 
-# Make a new predicition for a single customer
+# Make a new prediction for a single customer
 customer = np.array([[0, 0, 600, 1, 40, 3, 60000, 2, 1, 1, 50000]])
 customer = sc.transform(customer)
 
@@ -83,3 +82,49 @@ if new_prediction > 0.5:
     print('The customer is expected to leave the bank')
 else:
     print('The customer is expected to stay with the bank')
+    
+    
+      
+# Evaluate the performance of the Neural Network using k-fold cross validation
+from keras.wrappers.scikit_learn import KerasClassifier
+from sklearn.model_selection import cross_val_score
+from keras.models import Sequential
+from keras.layers import Dense
+def build_classifier():
+    classifier = Sequential()
+    classifier.add(Dense(units = 6, kernel_initializer = 'uniform', activation = 'relu', input_dim = 11))
+    classifier.add(Dense(units = 6, kernel_initializer = 'uniform', activation = 'relu'))
+    classifier.add(Dense(units = 1, kernel_initializer = 'uniform', activation = 'sigmoid'))
+    classifier.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
+    return classifier
+classifier = KerasClassifier(build_fn = build_classifier, batch_size = 10, epochs = 100)
+accuracies = cross_val_score(estimator = classifier, X = X_train, y = y_train, cv = 10, n_jobs = -1)
+mean = accuracies.mean()
+variance = accuracies.std()
+
+# Improve the ANN
+# Dropout Regularization to reduce overfitting if needed
+
+# Tune the ANN using Grid Search
+from keras.wrappers.scikit_learn import KerasClassifier
+from sklearn.model_selection import GridSearchCV
+from keras.models import Sequential
+from keras.layers import Dense
+def build_classifier(optimizer):
+    classifier = Sequential()
+    classifier.add(Dense(units = 6, kernel_initializer = 'uniform', activation = 'relu', input_dim = 11))
+    classifier.add(Dense(units = 6, kernel_initializer = 'uniform', activation = 'relu'))
+    classifier.add(Dense(units = 1, kernel_initializer = 'uniform', activation = 'sigmoid'))
+    classifier.compile(optimizer = optimizer, loss = 'binary_crossentropy', metrics = ['accuracy'])
+    return classifier
+classifier = KerasClassifier(build_fn = build_classifier)
+parameters = {'batch_size': [25, 32],
+              'epochs': [100, 500],
+              'optimizer': ['adam', 'rmsprop']}
+grid_search = GridSearchCV(estimator = classifier,
+                           param_grid = parameters,
+                           scoring = 'accuracy',
+                           cv = 10)
+grid_search = grid_search.fit(X_train, y_train)
+best_parameters = grid_search.best_params_
+best_accuracy = grid_search.best_score_
