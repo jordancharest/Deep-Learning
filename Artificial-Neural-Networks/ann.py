@@ -67,7 +67,19 @@ classifier.fit(X_train, y_train, batch_size = 10, epochs = 100)
 # Predict the Test set results
 y_pred = classifier.predict(X_test)
 
-# Making the Confusion Matrix
+# Make the Confusion Matrix
 from sklearn.metrics import confusion_matrix
 y_pred = (y_pred > 0.5)
 cm = confusion_matrix(y_test, y_pred)
+
+
+# Make a new predicition for a single customer
+customer = np.array([[0, 0, 600, 1, 40, 3, 60000, 2, 1, 1, 50000]])
+customer = sc.transform(customer)
+
+new_prediction = classifier.predict(customer)
+
+if new_prediction > 0.5:
+    print('The customer is expected to leave the bank')
+else:
+    print('The customer is expected to stay with the bank')
