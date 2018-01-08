@@ -41,6 +41,7 @@ X_test = sc.transform(X_test)
 import keras
 from keras.models import Sequential
 from keras.layers import Dense
+from keras.layers import Dropout
 
 # Initialize the ANN
 classifier = Sequential()
@@ -103,7 +104,10 @@ mean = accuracies.mean()
 variance = accuracies.std()
 
 # Improve the ANN
-# Dropout Regularization to reduce overfitting if needed
+# Dropout Regularization to reduce overfitting if needed (not needed on this model, low variance of accuracy)
+# Use this line below (add after each layer you want to add Dropout too)
+# classifier.add(Dropout(p = 0.1))
+
 
 # Tune the ANN using Grid Search
 from keras.wrappers.scikit_learn import KerasClassifier
